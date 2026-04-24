@@ -1,0 +1,127 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getEntry } from "astro:content";
+
+type ProjectFrontmatter = {
+  title: string;
+  summary: string;
+  year: string;
+  stack: string[];
+  repo?: string;
+  playStore?: string;
+  coverImage?: string;
+  heroImage?: string;
+  status?: string;
+};
+
+const finlioEntry = await getEntry("projects", "finlio");
+const medicineAppEntry = await getEntry("projects", "medicinebd-app");
+const medicineWebEntry = await getEntry("projects", "medicinebd-web");
+
+if (!finlioEntry || !medicineAppEntry || !medicineWebEntry) {
+  throw new Error("Required project content entries are missing.");
+}
+
+const finlio = finlioEntry.data as ProjectFrontmatter;
+const medicineApp = medicineAppEntry.data as ProjectFrontmatter;
+const medicineWeb = medicineWebEntry.data as ProjectFrontmatter;
+
+const projects = [
+  {
+    title: finlio.title,
+    summary: finlio.summary,
+    year: finlio.year,
+    stack: finlio.stack,
+    image: finlio.heroImage,
+    links: [
+      { label: "Case Study", href: "/projects/finlio" },
+      { label: "Play Store", href: finlio.playStore ?? "#", external: true }
+    ]
+  },
+  {
+    title: medicineWeb.title,
+    summary: medicineWeb.summary,
+    year: medicineWeb.year,
+    stack: medicineWeb.stack,
+    image: medicineWeb.coverImage,
+    links: [{ label: "GitHub", href: medicineWeb.repo ?? "#", external: true }],
+    badge: medicineWeb.status
+  },
+  {
+    title: medicineApp.title,
+    summary: medicineApp.summary,
+    year: medicineApp.year,
+    stack: medicineApp.stack,
+    image: medicineApp.coverImage,
+    links: [{ label: "GitHub", href: medicineApp.repo ?? "#", external: true }],
+    badge: medicineApp.status
+  },
+  {
+    title: "CPU Design",
+    summary:
+      "Legacy architecture project implementing a custom CPU model with ALU operations and instruction-flow design.",
+    year: "Legacy",
+    stack: ["Computer Architecture", "ALU", "ISA"],
+    image: "/images/work_2.jpg",
+    links: [{ label: "GitHub", href: "https://github.com/Ifte-Kharul/CPU_Design", external: true }],
+    badge: "Legacy project"
+  }
+];
+---
+
+<MainLayout
+  title="Projects"
+  description="Project portfolio of Md. Ifte Kharul Islam, including Finlio case study and legacy product implementations."
+>
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow" data-reveal>Projects</span>
+      <h1 data-reveal>Flagship case study plus foundational legacy work</h1>
+      <p data-reveal>
+        Finlio is documented as the primary product case study. MedicineBD and CPU Design are kept intentionally as
+        concise legacy entries to show progression over time.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container project-grid">
+      {
+        projects.map((project) => (
+          <article class="surface-card project-card" data-reveal>
+            {project.image && <img src={project.image} alt={`${project.title} preview`} loading="lazy" />}
+            <div class="project-card-content">
+              <h2>{project.title}</h2>
+              <p>{project.summary}</p>
+              <div class="tag-list">
+                <span class="tag">{project.year}</span>
+                {project.badge && <span class="tag">{project.badge}</span>}
+                {project.stack.map((item) => (
+                  <span class="tag">{item}</span>
+                ))}
+              </div>
+              <div class="card-links">
+                {project.links.map((link) => (
+                  <a
+                    class="chip-link"
+                    href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noopener noreferrer" : undefined}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="container" style="margin-top: 1.2rem;">
+      <div class="button-row" data-reveal>
+        <a class="button button-secondary" href="/experiments">See Experiments</a>
+      </div>
+    </div>
+  </section>
+</MainLayout>

@@ -1,0 +1,64 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getEntry } from "astro:content";
+
+type ResearcherFrontmatter = {
+  title: string;
+  summary: string;
+  platforms: string[];
+  chrome: string;
+  edge: string;
+  firefox: string;
+  images: string[];
+};
+
+const researcherEntry = await getEntry("experiments", "the-researcher");
+
+if (!researcherEntry) {
+  throw new Error("The Researcher experiment entry is missing.");
+}
+
+const researcher = researcherEntry.data as ResearcherFrontmatter;
+const { Content } = await researcherEntry.render();
+---
+
+<MainLayout title={researcher.title} description={researcher.summary} image={researcher.images[1] ?? "/images/logo.png"}>
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow" data-reveal>Experiment</span>
+      <h1 data-reveal>{researcher.title}</h1>
+      <p data-reveal>{researcher.summary}</p>
+      <div class="metrics-inline" data-reveal>
+        {researcher.platforms.map((platform) => (
+          <span class="tag">{platform}</span>
+        ))}
+      </div>
+      <div class="button-row" style="margin-top: 1rem;" data-reveal>
+        <a class="button button-primary" href={researcher.chrome} target="_blank" rel="noopener noreferrer">Chrome</a>
+        <a class="button button-secondary" href={researcher.edge} target="_blank" rel="noopener noreferrer">Edge</a>
+        <a class="button button-secondary" href={researcher.firefox} target="_blank" rel="noopener noreferrer">Firefox</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container case-study-layout">
+      <figure class="banner-wide" data-reveal>
+        <img src={researcher.images[1] ?? researcher.images[0]} alt="The Researcher extension interface" loading="lazy" />
+      </figure>
+
+      <div class="stack-grid">
+        <figure class="surface-card" data-reveal>
+          <img src={researcher.images[0]} alt="The Researcher screenshot one" loading="lazy" />
+        </figure>
+        <figure class="surface-card" data-reveal>
+          <img src={researcher.images[1] ?? researcher.images[0]} alt="The Researcher screenshot two" loading="lazy" />
+        </figure>
+      </div>
+
+      <article class="surface-card prose" data-reveal>
+        <Content />
+      </article>
+    </div>
+  </section>
+</MainLayout>

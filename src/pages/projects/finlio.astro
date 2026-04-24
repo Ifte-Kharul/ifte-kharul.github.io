@@ -1,0 +1,83 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getEntry } from "astro:content";
+
+type FinlioFrontmatter = {
+  title: string;
+  summary: string;
+  year: string;
+  role: string;
+  stack: string[];
+  playStore: string;
+  heroImage: string;
+  gallery: string[];
+};
+
+const finlioEntry = await getEntry("projects", "finlio");
+
+if (!finlioEntry) {
+  throw new Error("Finlio project entry is missing.");
+}
+
+const finlio = finlioEntry.data as FinlioFrontmatter;
+const { Content } = await finlioEntry.render();
+
+const appSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: finlio.title,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "Android",
+  description: finlio.summary,
+  url: "https://iftekharulislam.me/projects/finlio",
+  sameAs: [finlio.playStore]
+};
+---
+
+<MainLayout title={finlio.title} description={finlio.summary} image={finlio.heroImage}>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)}></script>
+  </Fragment>
+
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow" data-reveal>Case Study</span>
+      <h1 data-reveal>{finlio.title}</h1>
+      <p data-reveal>{finlio.summary}</p>
+      <div class="metrics-inline" data-reveal>
+        <span class="tag">Year: {finlio.year}</span>
+        <span class="tag">Role: {finlio.role}</span>
+        {finlio.stack.map((item) => (
+          <span class="tag">{item}</span>
+        ))}
+      </div>
+      <div class="button-row" style="margin-top: 1rem;" data-reveal>
+        <a class="button button-primary" href={finlio.playStore} target="_blank" rel="noopener noreferrer">View on Play Store</a>
+        <a class="button button-secondary" href="/projects">Back to Projects</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container case-study-layout">
+      <figure class="banner-wide" data-reveal>
+        <img src={finlio.heroImage} alt="Finlio featured preview" loading="lazy" />
+      </figure>
+
+      <div class="case-gallery">
+        {
+          finlio.gallery.map((imagePath, index) => (
+            <figure data-reveal>
+              <img src={imagePath} alt={`Finlio screen ${index + 1}`} loading="lazy" />
+              <figcaption>Finlio product workflow screen {index + 1}</figcaption>
+            </figure>
+          ))
+        }
+      </div>
+
+      <article class="surface-card prose" data-reveal>
+        <Content />
+      </article>
+    </div>
+  </section>
+</MainLayout>

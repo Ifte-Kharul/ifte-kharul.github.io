@@ -1,0 +1,59 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getEntry } from "astro:content";
+
+type ResearcherFrontmatter = {
+  title: string;
+  summary: string;
+  platforms: string[];
+  chrome: string;
+  edge: string;
+  firefox: string;
+  images: string[];
+};
+
+const researcherEntry = await getEntry("experiments", "the-researcher");
+
+if (!researcherEntry) {
+  throw new Error("The Researcher experiment entry is missing.");
+}
+
+const researcher = researcherEntry.data as ResearcherFrontmatter;
+---
+
+<MainLayout
+  title="Experiments"
+  description="Product experiments by Md. Ifte Kharul Islam, including The Researcher browser extension."
+>
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow" data-reveal>Experiments</span>
+      <h1 data-reveal>Fun builds that solve real small problems</h1>
+      <p data-reveal>
+        Experiments are lightweight projects where I test practical ideas quickly. They are useful for learning and
+        for proving user value in focused workflows.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container experiments-grid">
+      <article class="surface-card project-card" data-reveal>
+        <img src={researcher.images[1] ?? researcher.images[0]} alt="The Researcher extension preview" loading="lazy" />
+        <div class="project-card-content">
+          <h2>{researcher.title}</h2>
+          <p>{researcher.summary}</p>
+          <div class="tag-list">
+            {researcher.platforms.map((platform) => (
+              <span class="tag">{platform}</span>
+            ))}
+          </div>
+          <div class="card-links">
+            <a class="chip-link" href="/experiments/the-researcher">Details</a>
+            <a class="chip-link" href={researcher.chrome} target="_blank" rel="noopener noreferrer">Chrome Store</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+</MainLayout>

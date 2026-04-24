@@ -1,0 +1,94 @@
+---
+import SiteHeader from "../components/navigation/SiteHeader.astro";
+import Footer from "../components/common/Footer.astro";
+
+import "../styles/tokens.css";
+import "../styles/base.css";
+import "../styles/components.css";
+import "../styles/pages.css";
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  canonical?: string;
+  noindex?: boolean;
+}
+
+const defaultCanonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : Astro.url.href;
+
+const {
+  title,
+  description,
+  image = "/images/logo.png",
+  canonical = defaultCanonical,
+  noindex = false
+} = Astro.props;
+
+const pageTitle = `${title} | Md. Ifte Kharul Islam`;
+const robots = noindex ? "noindex, nofollow" : "index, follow";
+const ogImage = Astro.site ? new URL(image, Astro.site).toString() : image;
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Md. Ifte Kharul Islam",
+  jobTitle: "Software Engineer",
+  url: canonical,
+  image: ogImage,
+  sameAs: [
+    "https://www.linkedin.com/in/md-ifte-kharul-islam/",
+    "https://github.com/Ifte-Kharul"
+  ],
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Dhaka",
+    addressCountry: "Bangladesh"
+  }
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <meta name="theme-color" content="#0a1426" />
+    <link rel="canonical" href={canonical} />
+
+    <title>{pageTitle}</title>
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/fav/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/fav/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/fav/favicon-16x16.png" />
+    <link rel="manifest" href="/fav/site.webmanifest" />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(personJsonLd)}></script>
+    <slot name="head" />
+  </head>
+
+  <body data-page-path={Astro.url.pathname}>
+    <SiteHeader />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+
+    <script type="module" src="/scripts/mobile-nav.js?v=2"></script>
+    <script type="module" src="/scripts/reveal-animations.js?v=2"></script>
+    <script type="module" src="/scripts/active-nav.js?v=2"></script>
+  </body>
+</html>
