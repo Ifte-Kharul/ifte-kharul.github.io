@@ -2,23 +2,13 @@
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getEntry } from "astro:content";
 
-type ResearcherFrontmatter = {
-  title: string;
-  summary: string;
-  platforms: string[];
-  chrome: string;
-  edge: string;
-  firefox: string;
-  images: string[];
-};
-
 const researcherEntry = await getEntry("experiments", "the-researcher");
 
 if (!researcherEntry) {
   throw new Error("The Researcher experiment entry is missing.");
 }
 
-const researcher = researcherEntry.data as ResearcherFrontmatter;
+const researcher = researcherEntry.data;
 ---
 
 <MainLayout
@@ -57,3 +47,4 @@ const researcher = researcherEntry.data as ResearcherFrontmatter;
     </div>
   </section>
 </MainLayout>
+---
